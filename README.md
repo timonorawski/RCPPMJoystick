@@ -10,4 +10,4 @@ Tested with [FPV Freerider](https://fpv-freerider.itch.io/fpv-freerider) (Tested
 - RC TX with PPM Trainer Port (Tested with Turnigy 9x)
 
 ## Circuit Diagram
-coming soon
+![Circuit Diagram](https://raw.githubusercontent.com/timonorawski/RCPPMJoystick/master/CircuitDiagram.png)
