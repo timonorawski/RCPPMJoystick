@@ -6,7 +6,7 @@ Tested with [FPV Freerider](https://fpv-freerider.itch.io/fpv-freerider) (Tested
 ## Requirements:
 - Single Joystick Library from https://github.com/MHeironimus/ArduinoJoystickLibrary
 - an Arduino Leonardo or Arduino Pro Micro
-- mono audio cable
+- mono audio cable or mono audio jack and two strands of hookup wire.
 - RC TX with PPM Trainer Port (Tested with Turnigy 9x)
 
 ## Circuit Diagram
