@@ -17,7 +17,7 @@
  * 2016-04-11
  */
 
-#include <Joystick.h>
+#include "Joystick.h"
 
 #include <avr/interrupt.h>
 
@@ -25,7 +25,7 @@
 //#define FUTABA
 
 // if you have a stick that isn't centred at 1500ppm, set your center below
-#define CUSTOM_STICK_CENTER 1450
+#define CUSTOM_STICK_CENTER 1500
 
 // if any of your controls are inverted, comment/uncomment the lines below
 #define INVERT_THROTTLE
@@ -34,7 +34,7 @@
 //#define INVERT_YAW
 
 // Use to enable output of PPM values to serial
-// #define SERIALOUT
+//#define SERIALOUT
 
 #define RC_CHANNELS_COUNT 6
 
@@ -52,14 +52,15 @@
 #define THRESHOLD 100 // threshold is used to detect PPM values (added to range at both ends)
 #endif
 
-#define USB_STICK_VALUE_MIN -126
-#define USB_STICK_VALUE_MAX 126
+#define USB_STICK_VALUE_MIN 0
+#define USB_STICK_VALUE_MAX 1000
 
 #define USB_STICK_ROTATION_VALUE_MIN 0
-#define USB_STICK_ROTATION_VALUE_MAX 359
+#define USB_STICK_ROTATION_VALUE_MAX 1000
 
-#define MIN_PULSE_WIDTH (STICK_CENTER - STICK_HALFWAY)
-#define MAX_PULSE_WIDTH (STICK_CENTER + STICK_HALFWAY)
+#define MIN_PULSE_WIDTH (STICK_CENTER - STICK_HALFWAY - 15)
+#define MAX_PULSE_WIDTH (STICK_CENTER + STICK_HALFWAY + 15)
+
 #define NEWFRAME_PULSE_WIDTH 3000
 
 // timer capture ICP1 pin corresponds to Leonardo digital pin 4
@@ -88,6 +89,10 @@ void setup() {
   initTimer();
   // Initialize Joystick Library
   Joystick.begin(true);
+  
+#ifdef SERIALOUT
+  Serial.begin(115000);
+#endif
 }
 
 // Constant that maps the phyical pin to the joystick button.
@@ -98,7 +103,33 @@ int lastButtonState[4] = {0,0,0,0};
 
 void loop() {
   setControllerDataJoystick();
+#ifdef SERIALOUT  
+  Serial.print(rcValue[YAW]); 
+  Serial.print("\t");
+  Serial.print(rcValue[THROTTLE]); 
+  Serial.print("\t");
+  Serial.print(rcValue[ROLL]); 
+  Serial.print("\t");
+  Serial.print(rcValue[PITCH]); 
+  Serial.print("\t");
+  Serial.print(rcValue[AUX1]); 
+  Serial.print("\t");
+  Serial.print(rcValue[AUX2]); 
+  Serial.println("\t");
 
+  Serial.print(stickValue(rcValue[YAW])); 
+  Serial.print("\t");
+  Serial.print(stickValue(rcValue[THROTTLE])); 
+  Serial.print("\t");
+  Serial.print(stickRotationValue(rcValue[ROLL])); 
+  Serial.print("\t");
+  Serial.print(stickRotationValue(rcValue[PITCH])); 
+  Serial.print("\t");
+  Serial.print(rcValue[AUX1]); 
+  Serial.print("\t");
+  Serial.print(rcValue[AUX2]); 
+  Serial.println("\t");
+#endif
   //Joystick.sendState();
   delay(5);
 }
@@ -111,17 +142,17 @@ void setControllerDataJoystick() {
     stickValue(rcValue[YAW]));
   Joystick.setYAxis(
     #ifdef INVERT_THROTTLE
-      -1*
+     1000 -
     #endif
     stickValue(rcValue[THROTTLE]));
   Joystick.setXAxisRotation(
     #ifdef INVERT_ROLL
-      360 -
+      1000 -
     #endif
     stickRotationValue(rcValue[ROLL]));
   Joystick.setYAxisRotation(
     #ifdef INVERT_PITCH
-      360 -
+      1000 -
     #endif
     stickRotationValue(rcValue[PITCH]));
   Joystick.setButton(0, rcValue[AUX1] > STICK_CENTER);
@@ -151,8 +182,8 @@ void initTimer(void) {
 }
 
 // Convert a value in the range of [Min Pulse - Max Pulse] to [0 - USB_STICK_VALUE_MAX]
-char stickValue(uint16_t rcVal) {
-  return (char)constrain(
+int stickValue(uint16_t rcVal) {
+  return (int)constrain(
            map(rcVal - MIN_PULSE_WIDTH,
                0, MAX_PULSE_WIDTH - MIN_PULSE_WIDTH,
                USB_STICK_VALUE_MIN, USB_STICK_VALUE_MAX
