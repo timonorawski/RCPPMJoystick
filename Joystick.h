@@ -1,7 +1,7 @@
 /*
   Joystick.h
 
-  Copyright (c) 2015, Matthew Heironimus
+  Copyright (c) 2015, Matthew Heironimus (https://github.com/MHeironimus/ArduinoJoystickLibrary)
   Modified 2016 by Timon Orawski, to increase stick resolution
 
   This library is free software; you can redistribute it and/or
